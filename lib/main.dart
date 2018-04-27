@@ -4,7 +4,6 @@ void main() => runApp(new MyApp());
 
 Container buildButtonColumn(IconData icon, String label, Color color) {
   return new Container(
-    margin: EdgeInsets.symmetric(horizontal: 25.0),
     child: new Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -50,6 +49,7 @@ class MyApp extends StatelessWidget {
             child: new Column(children: <Widget>[
               new Container(
                   margin: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: new TextField(
                     keyboardType: TextInputType.number,
                     autofocus: true,
@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
                   buildButtonColumn(
                       Icons.attach_money, '20', Color(0xFF388E3C)),
                 ],
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
               ),
               new Row(
                 children: <Widget>[
@@ -85,8 +85,9 @@ class MyApp extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 20.0),
                       child: new Text("Total"))
                 ],
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               )
-            ]),
+            ],mainAxisAlignment: MainAxisAlignment.spaceEvenly,),
           ),
         ));
   }
