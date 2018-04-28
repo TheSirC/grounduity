@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'buttoncolumn.dart';
+import 'resultcolumn.dart';
 import 'dart:core';
 
 void main() => runApp(new MyApp());
@@ -11,22 +12,21 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double _billAmount = 0.0;
-  int _tipPercentage = 0;
-  int _billTotal;
-  int _tipTier1 = 10;
-  int _tipTier2 = 15;
-  int _tipTier3 = 20;
+  static double _tipTier1 = 10.0;
+  static double _tipTier2 = 15.0;
+  static double _tipTier3 = 20.0;
+  double _tipPercentage = _tipTier2;
   String _monetarySymbol = "\$";
 
   final appName = 'Grounduity';
 
-  double calculateTotal(double total, int tip) {
+  double calculateTotal(double total, double tip) {
     return (total * (1 + tip / 100)).ceilToDouble();
   }
 
   String calculateTip(double previousTotal, double newTotal) {
     var result = newTotal - previousTotal;
-    return "$result";
+    return result.toStringAsPrecision(3);
   }
 
   // This widget is the root of your application.
@@ -63,60 +63,53 @@ class _MyAppState extends State<MyApp> {
                         }
                       },
                     )),
-                new ListBody(
+                new Row(
                   children: <Widget>[
                     new ButtonColumn(
-                        icon: Icons.attach_money,
+                        icon: Icons.star_border,
                         value: _tipTier1,
                         groupValue: _tipPercentage,
-                        onChanged: (int value) {
+                        onChanged: (double value) {
                           setState(() {
                             _tipPercentage = value;
                           });
                         },
                         label: _tipTier1.toString()),
                     new ButtonColumn(
-                        icon: Icons.attach_money,
+                        icon: Icons.star_half,
                         value: _tipTier2,
                         groupValue: _tipPercentage,
-                        onChanged: (int value) {
+                        onChanged: (double value) {
                           setState(() {
                             _tipPercentage = value;
                           });
                         },
                         label: _tipTier2.toString()),
                     new ButtonColumn(
-                        icon: Icons.attach_money,
+                        icon: Icons.star,
                         value: _tipTier3,
                         groupValue: _tipPercentage,
-                        onChanged: (int value) {
+                        onChanged: (double value) {
                           setState(() {
                             _tipPercentage = value;
                           });
                         },
                         label: _tipTier3.toString())
                   ],
-                  mainAxis: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 ),
                 new Row(
                   children: <Widget>[
-                    new Container(
-                        margin: EdgeInsets.all(40.0),
-                        child: new Text(
-                          _monetarySymbol +
-                              calculateTip(_billAmount,
-                                  calculateTotal(_billAmount, _tipPercentage)),
-                          maxLines: 1,
-                          textScaleFactor: 1.75,
-                        )),
-                    new Container(
-                        margin: EdgeInsets.all(40.0),
-                        child: new Text(
-                          _monetarySymbol +
-                              '$calculateTotal(_billAmount, _tipPercentage)',
-                          maxLines: 1,
-                          textScaleFactor: 1.75,
-                        ))
+                    ResultColumn(
+                        title: "Tip",
+                        value: _monetarySymbol +
+                            calculateTip(_billAmount,
+                                calculateTotal(_billAmount, _tipPercentage))),
+                    ResultColumn(
+                        title: "Total",
+                        value: _monetarySymbol +
+                            calculateTotal(_billAmount, _tipPercentage)
+                                .toStringAsPrecision(3))
                   ],
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 )
