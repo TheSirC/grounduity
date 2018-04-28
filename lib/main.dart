@@ -1,61 +1,46 @@
 import 'package:flutter/material.dart';
+import 'buttoncolumn.dart';
+import 'dart:core';
 
 void main() => runApp(new MyApp());
 
-Container buildButtonColumn(IconData icon, String label, Color color) {
-  return new Container(
-    child: new Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        new Container(
-          margin: EdgeInsets.only(top: 20.0),
-          child: new Icon(
-            icon,
-            color: color,
-            size: 40.0,
-          ),
-        ),
-        new Container(
-          margin: const EdgeInsets.only(top: 7.0),
-          child: new Text(
-            label + '%',
-            style: new TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.w400,
-              color: color,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => new _MyAppState();
 }
 
-class MyApp extends StatelessWidget {
-
-  double billAmount = 0.0;
-  double tipPercentage = 0.0;
-  int tipTier1 = 10;
-  int tipTier2 = 15;
-  int tipTier3 = 20;
-  String monetarySymbol = "\$";
-
+class _MyAppState extends State<MyApp> {
+  double _billAmount = 0.0;
+  int _tipPercentage = 0;
+  int _billTotal;
+  int _tipTier1 = 10;
+  int _tipTier2 = 15;
+  int _tipTier3 = 20;
+  String _monetarySymbol = "\$";
 
   final appName = 'Grounduity';
+
+  double calculateTotal(double total, int tip) {
+    return (total * (1 + tip / 100)).ceilToDouble();
+  }
+
+  String calculateTip(double previousTotal, double newTotal) {
+    var result = newTotal - previousTotal;
+    return "$result";
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Grounduity',
         theme: new ThemeData(
             primarySwatch: Colors.green, accentColor: Colors.greenAccent),
         home: new Scaffold(
           appBar: new AppBar(
             title: Text(appName),
           ),
-          body: new Align(
-            alignment: Alignment(0.5, 0.5),
+          body: new Center(
             child: new Column(
               children: <Widget>[
                 new Container(
@@ -65,43 +50,70 @@ class MyApp extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       autofocus: true,
                       decoration: new InputDecoration(
-                        prefixText: monetarySymbol,
+                        prefixText: _monetarySymbol,
                         labelText: "Bill before gratuity",
                         labelStyle: TextStyle(fontSize: 25.0),
                         hintText: '10',
                       ),
                       onChanged: (String value) {
                         try {
-                          billAmount = double.parse(value);
+                          _billAmount = double.parse(value);
                         } catch (exception) {
-                          billAmount = 0.0;
+                          _billAmount = 0.0;
                         }
                       },
                     )),
-                new Row(
+                new ListBody(
                   children: <Widget>[
-                    buildButtonColumn(
-                        Icons.attach_money, tipTier1.toString(), Color(0xFF388E3C)),
-                    buildButtonColumn(
-                        Icons.attach_money, tipTier2.toString(), Color(0xFF388E3C)),
-                    buildButtonColumn(
-                        Icons.attach_money, tipTier3.toString(), Color(0xFF388E3C)),
+                    new ButtonColumn(
+                        icon: Icons.attach_money,
+                        value: _tipTier1,
+                        groupValue: _tipPercentage,
+                        onChanged: (int value) {
+                          setState(() {
+                            _tipPercentage = value;
+                          });
+                        },
+                        label: _tipTier1.toString()),
+                    new ButtonColumn(
+                        icon: Icons.attach_money,
+                        value: _tipTier2,
+                        groupValue: _tipPercentage,
+                        onChanged: (int value) {
+                          setState(() {
+                            _tipPercentage = value;
+                          });
+                        },
+                        label: _tipTier2.toString()),
+                    new ButtonColumn(
+                        icon: Icons.attach_money,
+                        value: _tipTier3,
+                        groupValue: _tipPercentage,
+                        onChanged: (int value) {
+                          setState(() {
+                            _tipPercentage = value;
+                          });
+                        },
+                        label: _tipTier3.toString())
                   ],
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxis: Axis.horizontal,
                 ),
                 new Row(
                   children: <Widget>[
                     new Container(
                         margin: EdgeInsets.all(40.0),
                         child: new Text(
-                          "Gratuity",
+                          _monetarySymbol +
+                              calculateTip(_billAmount,
+                                  calculateTotal(_billAmount, _tipPercentage)),
                           maxLines: 1,
                           textScaleFactor: 1.75,
                         )),
                     new Container(
                         margin: EdgeInsets.all(40.0),
                         child: new Text(
-                          "Total",
+                          _monetarySymbol +
+                              '$calculateTotal(_billAmount, _tipPercentage)',
                           maxLines: 1,
                           textScaleFactor: 1.75,
                         ))
