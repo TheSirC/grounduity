@@ -2,35 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'dart:core';
+import 'dart:async';
 
-class ButtonColumn<T> extends StatefulWidget {
-  const ButtonColumn(
+typedef FutureValueChanged = Future<void> Function(BuildContext context);
+
+class ButtonColumn<double> extends StatefulWidget {
+  ButtonColumn(
       {Key key,
       @required this.icon,
-      @required this.label,
       @required this.value,
       @required this.groupValue,
-      @required this.onChanged})
+      @required this.onChanged,
+      @required this.onTierChanged})
       : super(key: key);
 
   final IconData icon;
-  final String label;
-  final T value;
-  final T groupValue;
-  final ValueChanged<T> onChanged;
-  final Color activeColor;
+  double value;
+  final double groupValue;
+  final ValueChanged<double> onChanged;
+  final FutureValueChanged onTierChanged;
+  Color activeColor;
 
   @override
-  _ButtonColumnState<T> createState() => new _ButtonColumnState<T>();
+  _ButtonColumnState<double> createState() => new _ButtonColumnState<double>();
 }
 
-class _ButtonColumnState<T> extends State<ButtonColumn<T>> {
+class _ButtonColumnState<double> extends State<ButtonColumn<double>> {
   Color _getInactiveColor(ThemeData themeData, bool selected) {
     return selected ? themeData.unselectedWidgetColor : themeData.disabledColor;
   }
 
-  void _handleChanged(bool selected) {
+  void _handleChanged() {
     widget.onChanged(widget.value);
+  }
+
+  Null _handleTierChanged(BuildContext context) {
+    widget.onTierChanged(context);
+    return null;
   }
 
   @override
@@ -39,9 +48,10 @@ class _ButtonColumnState<T> extends State<ButtonColumn<T>> {
     return new GestureDetector(
       onTap: () {
         setState(() {
-          _handleChanged(selected);
+          _handleChanged();
         });
       },
+      onLongPress: () => _handleTierChanged(context),
       child: new Container(
         child: new Column(
           mainAxisSize: MainAxisSize.min,
@@ -60,7 +70,7 @@ class _ButtonColumnState<T> extends State<ButtonColumn<T>> {
             new Container(
               margin: const EdgeInsets.only(top: 7.0),
               child: new Text(
-                widget.label + '%',
+                widget.value.toString() + '%',
                 style: new TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.w400,
